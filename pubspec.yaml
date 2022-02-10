@@ -35,6 +35,7 @@ dependencies:
   data_table_2:
   google_maps_flutter: 
   image_picker: 
+  mailer: ^5.1.0
 
 
 

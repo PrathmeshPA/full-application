@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:dsapp/Screen/home_page.dart';
 import 'package:dsapp/Screen/filterchip.dart';
 import 'package:dsapp/Screen/home_page.dart';
 import 'package:dsapp/forget_password.dart';
+import 'package:dsapp/gmail.dart';
 import 'package:dsapp/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: loginpage(),
+      home: FilterChipDisplay(),
     );
   }
 }
@@ -53,7 +53,8 @@ class _loginpageState extends State<loginpage> {
       var respo = await http.post(uri, body: {
         "email": email.text,
         "password": password.text,
-      });
+      }
+      );
 
       // setState(() {
       //   print(email.text);
@@ -108,10 +109,12 @@ class _loginpageState extends State<loginpage> {
         );
       }
     }
+  
   }
 
   GlobalKey<FormState> fromk = GlobalKey<FormState>();
-
+  
+ 
   // void validate(){
   //   var currentState = fromk.currentState;
   //   if(currentState!.validate()){

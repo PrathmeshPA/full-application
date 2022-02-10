@@ -1,9 +1,9 @@
-import 'dart:ffi';
-import 'dart:io';
-import 'dart:math';
 
+import 'package:dsapp/gmail.dart';
 import 'package:flutter/material.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'mobile.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:data_table_2/data_table_2.dart';
@@ -11,13 +11,14 @@ import 'package:flutter/rendering.dart';
 // import 'package:pdf/pdf.dart';
 
 class DisplayData extends StatefulWidget {
-  List newdata = [];
+  List newdata = [] ;
+  var usergmail;
   // List saledata = [];
 
   // SelectedData({required this.newdata});
   DisplayData({
     Key? key,
-    required this.newdata,
+    required this.newdata,this.usergmail
   }) : super(key: key);
 
   @override
@@ -25,16 +26,15 @@ class DisplayData extends StatefulWidget {
 }
 
 class _SelectedDataState extends State<DisplayData> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // print(widget.newdata);
-  }
+  set html(html) {}
+
+  // var ndata = widget.newdata;
+
+  
 
   List post = [];
-
-
+  late dynamic dataon;
+  var alldata;
   double mul = 0;
   double weight = 0;
   double weightSum = 0;
@@ -46,6 +46,14 @@ class _SelectedDataState extends State<DisplayData> {
   double pdfsum = 0;
   double pdfamount = 0;
 
+  double amo=0;
+
+   dynamic tabledata="";
+    List clqt =[];
+     
+   
+  
+      
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,10 +102,10 @@ class _SelectedDataState extends State<DisplayData> {
                         numeric: true),
                   ],
                   rows: widget.newdata.map((e) {
-                    weight += double.parse(e['clqty']);
+                    weight += (e['clqty']);
 
                     mul =
-                        double.parse(e['saleprice']) * double.parse(e['clqty']);
+                        (e['saleprice']) * (e['clqty']);
                     sum += mul;
 
                     weightSum = double.parse((weight).toStringAsFixed(2));
@@ -112,8 +120,8 @@ class _SelectedDataState extends State<DisplayData> {
                       DataCell(Text(e["colornm"].toString())),
                       DataCell(Text(e["clarnm"].toString())),
                       DataCell(Text(e["clqty"].toString())),
-                      DataCell(Text(e["disc"] + "%".toString())),
-                      DataCell(Text("\$" + e["saleprice"].toString())),
+                      DataCell(Text('${e["disc"]}%'.toString())),
+                      DataCell(Text('\$${e["saleprice"]}'.toString())),
                       DataCell(Text("\$$amount")),
                     ]);
                   }).toList()),
@@ -145,16 +153,31 @@ class _SelectedDataState extends State<DisplayData> {
               SizedBox(height: 20),
               Container(
                 child: ElevatedButton(
-                    onPressed: _createPDF, child: Text("Submit")),
-              )
+                    onPressed: _createPDF, child: Text("Submit"),
+                    ),
+              ),
+              // Container(
+              //   child:  ListView.builder(
+              //     itemCount: dataon.length,
+              //     itemBuilder:( context, index){
+              //       return Text(dataon[index]['name']);
+              //     }),
+              // ),
+              ElevatedButton(onPressed: maingmail,
+              child: Text("Send Gmail"),)
             ],
           ),
+          
         ));
   }
+     
 
-  Future<void> _createPDF() async {
+   _createPDF() async {
     final document = PdfDocument();
     final page = document.pages.add();
+    // clqt+=(tabledata);
+    // newMap = groupBy(partySnapData, (obj) => obj['party_name']);
+    
 
     PdfGrid grid = PdfGrid();
 
@@ -215,7 +238,7 @@ class _SelectedDataState extends State<DisplayData> {
 
     widget.newdata.map((e) {
       // print(mul);
-      pdfmul = double.parse(e['saleprice']) * double.parse(e['clqty']);
+      pdfmul = (e['saleprice']) * (e['clqty']);
       pdfsum += pdfmul;
       
       pdfamount = double.parse((pdfmul).toStringAsFixed(2));
@@ -248,14 +271,14 @@ class _SelectedDataState extends State<DisplayData> {
       row.cells[7].stringFormat = PdfStringFormat(
           alignment: PdfTextAlignment.right,
           lineAlignment: PdfVerticalAlignment.middle);
-
+        // name =(e['name']).toString();
       row.cells[0].value = (e['name']).toString();
       row.cells[1].value = (e['shapenm']).toString();
       row.cells[2].value = (e['colornm']).toString();
       row.cells[3].value = (e['clarnm']).toString();
       row.cells[4].value = (e['clqty']).toString();
-      row.cells[5].value = (e['disc'] + '%').toString();
-      row.cells[6].value = ('\$' + e['saleprice']).toString();
+      row.cells[5].value = ('${e['disc']}%' ).toString();
+      row.cells[6].value = ( '\$${e['saleprice']}').toString();
       row.cells[7].value = ('\$$pdfamount').toString();
     }).toList();
 
@@ -298,5 +321,136 @@ class _SelectedDataState extends State<DisplayData> {
     document.dispose();
 
     saveAndLaunchfile(bytes, 'Summary.pdf');
+    // new GestureDetector(onTap: maingmail,);
+    
   }
+  newfunc() {
+  tabledata+=  widget.newdata.map((ele) => ("<tr><td>" + ele['name'].toString()  + "</td>" 
+    + "<td>" + ele['shapenm'].toString()  + "</td>" + 
+    "<td>"   + ele['colornm'].toString()    + "</td>" + 
+    "<td>"   + ele['clarnm'].toString()    + "</td>" + 
+    "<td>"   + ele['clqty'].toString()    + "</td>" +
+     "<td>" + '${ele['disc']}%'.toString()    + "</td>" + 
+     "<td>" + '\$${ele['saleprice']}'.toString()    +  "</td>"+
+     "<td>" + '\$${ele['saleprice'] * ele['clqty']}'.toString()  +
+    //  "<td>" + '\$${ele['saleprice'] * ele['clqty']}'.toString()  +
+     "</td></tr>")).toString();
+
+   
+
+  }
+  
+   
+    Future maingmail() async {
+  
+  String username = 'patilram2022@gmail.com';
+  String password = '9970878210';
+
+  // ignore: deprecated_member_use
+  final smtpServer = gmail(username, password);
+  // Create our message.
+  final message = Message()
+    ..from = Address(username)
+    // ..recipients.add('info@diasoft.in')
+    ..recipients.add('parthaitawade20@gmail.com')
+    ..ccRecipients.addAll([widget.usergmail])
+    // ..bccRecipients.add(Address('bccAddress@example.com'))
+   ..subject = 'welcome to Diasoft Application:: 😀 ::'
+   ..text = 'This is the plain text.\nThis is line 2 of the text part.'
+
+
+
+    ..html =  
+       '''
+   <html>
+   <body>
+  
+   <h2>This is the Selected Diomand</h2>
+
+   <table algn ="center" border = "1px" style="width:300px; line-height:30px;">
+  <thead>
+   <tr>
+     <th> Name     </th>
+     <th> Shape    </th>
+     <th> Color    </th>
+     <th> Certificate    </th>
+     <th> Weight   </th>
+     <th> Discount </th>
+     <th> Price    </th>
+     <th> Amount    </th>
+  </tr>
+  </thead>
+  
+     
+     <tbody>
+       $tabledata                             
+
+      </tbody>
+    
+       
+        
+
+ </table>
+ 
+  
+       
+  </body>
+  </html>
+
+    '''; 
+   
+ 
+   try {
+    final sendReport = await send(message, smtpServer);
+     Fluttertoast.showToast(msg: "Gmail Massage Send");
+    print('Message sent: ' + sendReport.toString());
+  } on MailerException catch (e) {
+    Fluttertoast.showToast(msg: "Gmail Massage not Send");
+    print('Message not sent.');
+    for (var p in e.problems) {
+      
+      print('Problem: ${p.code}: ${p.msg}');
+    }
+  }
+    }
 }
+
+// ${widget.newdata.map((e) => {
+
+//       '<td>' , e['name'], '</td>' 
+//       '<td>' , e['shapenm'], '</td>'
+//       '<td>' , e['colornm'], '</td>'
+//       '<td>' , e['clarnm'], '</td>'
+//       '<td>' , e['clqty'], '</td>'
+     
+//       })}
+
+
+
+ 
+    //   <tr>
+    //  <td>   ${widget.newdata.map((e) =>  e['name'])} </td>    
+    //   <td>  ${widget.newdata.map((e) => e['shapenm'])}   </td>   
+    //   <td>  ${widget.newdata.map((e) => e['colornm'])}   </td>    
+    //   <td>  ${widget.newdata.map((e) => e['clarnm'])}    </td>  
+    //   <td>  ${widget.newdata.map((e) => e['clqty'])}     </td>   
+    //   <td>  ${widget.newdata.map((e) => e['disc'])}      </td>  
+    //   <td>  ${widget.newdata.map((e) => e['saleprice'])} </td> 
+    //   <td>  ${pdfamount}                                 </td> 
+    //   </tr> 
+
+    // <td>${widget.newdata.map((e) => {
+    //        e['name'],
+    //      })}</td>
+    //       <td>${widget.newdata.map((e) => {
+    //        e['shapenm'],
+    //      })}</td>
+    //       <td>${widget.newdata.map((e) => {
+    //        e['colornm'],
+    //      })}</td>
+    //       <td>${widget.newdata.map((e) => {
+    //        e['clarnm'],
+    //      })}</td>
+
+
+   

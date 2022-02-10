@@ -13,6 +13,7 @@ class BottomNavigator extends StatefulWidget {
     Key? key,
      this.bottomemail,
   }) : super(key: key);
+  
   @override
   _BottomNavigatorState createState() => _BottomNavigatorState();
 }
@@ -23,6 +24,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   setBottomBarIndex(index) {
     setState(() {
       currentIndex = index;
+      print(widget.bottomemail);
     });
   }
 

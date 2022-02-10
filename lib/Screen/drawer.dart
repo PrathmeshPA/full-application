@@ -1,19 +1,20 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:io';
-
 import 'package:dsapp/Screen/account_details.dart';
 import 'package:dsapp/Screen/edit_account_details.dart';
 import 'package:dsapp/Screen/change_password.dart';
 import 'package:dsapp/Screen/filterchip.dart';
 import 'package:dsapp/Screen/menu_items.dart';
 import 'package:dsapp/main.dart';
+import 'package:get/get_connect/http/src/http/html/file_decoder_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:dsapp/Screen/about_us.dart';
 import 'package:dsapp/Screen/contact_us.dart';
 import 'package:dsapp/Screen/home_page.dart';
 import 'package:dsapp/Screen/why_us.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 // ignore: must_be_immutable
 class DrawerInfo extends StatefulWidget {
@@ -25,11 +26,15 @@ class DrawerInfo extends StatefulWidget {
 
   @override
   _DrawerInfoState createState() => _DrawerInfoState();
+
 }
 
 class _DrawerInfoState extends State<DrawerInfo> {
   @override
   Widget build(BuildContext context) {
+    final img = widget.drawerinfoaccountdetails['image'];
+    print(img);
+    
     return Drawer(
       child: 
              ListView(
@@ -58,9 +63,23 @@ class _DrawerInfoState extends State<DrawerInfo> {
                   accountName: Text(widget.emaildata),
                   accountEmail: Text(widget.emaildata),
                   currentAccountPicture: CircleAvatar(
-                    backgroundImage: AssetImage('assets/diasoft logo.png'),
+                    backgroundImage: NetworkImage(img.toString()),
+                    // child:  ClipRRect(
+                    //         borderRadius: BorderRadius.circular(200.0),
+                            
+                    //         child:
+                    //          Image.file(img,
+                            
+                    //           fit: BoxFit.cover,  
+                    //           height: 200,
+                    //           width: 200,
+                    //          )
+                    //         ),
+                            
+                            ),
+                    // backgroundImage: AssetImage('assets/diasoft logo.png'),
                   ),
-                ),
+               
                 ListTile(
                   leading: Icon(Icons.home),
                   title: Text("Home"),

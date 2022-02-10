@@ -25,14 +25,3 @@ class SelectSize extends GetxController{
 }
 
 
-class selectcut extends GetxController{
-  var selectedcut =List<String>.empty(growable: true).obs;
-}
-
-class selectpolish extends GetxController{
-  var selectedpol =List<String>.empty(growable: true).obs;
-}
-
-class selectsymmetry extends GetxController{
-  var selectedsymm =List<String>.empty(growable: true).obs;
-}

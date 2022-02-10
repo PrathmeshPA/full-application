@@ -1,115 +1,75 @@
-import 'package:dsapp/Screen/drawer.dart';
-import 'package:dsapp/Screen/listcontroll.dart';
 import 'package:dsapp/Screen/new_api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'listcontroll.dart';
 
-List<dynamic> shname = [
-  "ROUND",
-  "CUSHION",
-  "PEAR",
-  "OVAL",
-  "PRINCESS",
-  "HEART",
-  "RADIANT",
-  "EMERALD",
-  "ASSCHER",
-  "MARQUISE",
-];
+List<dynamic> shname = ["CUSHION","PEAR","OVAL","ROUND","PRINCESS","HEART", "RADIANT","EMERALD","ASSCHER","MARQUISE",];
 
-List<dynamic> colname = [
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-];
+List<dynamic> colname = ["D","E","F","G","H","I","J","K","L","M","N"];
 
-List<dynamic> Clarity = [
-  "IF",
-  "VVS1",
-  "VVS2",
-  "VS1",
-  "VS2",
-  "SI1",
-  "SI2",
-  "SI3",
-  "I1",
-  "I2",
-  "I3",
-];
+List<dynamic> Clarity=[ "IF","VVS1","VVS2","VS1","VS2","SI1","SI2","SI3", "I1", "I2", "I3"];
 
-List<dynamic> Labcert = ["GIA", "IGI", "GSI"];
+List<dynamic> Labcert = ["GIA" , "IGI" ,"GSI"];
 
-List<dynamic> _size = [
-  "(0.01 - 0.03)",
-  "(0.04 - 0.07)",
-  "(0.08 - 0.14)",
-  "(0.15 - 0.17)",
-  "(0.18 - 0.22)",
-  "(0.30 - 0.39)",
-  "(0.40 - 0.49)",
-  "(0.50 - 0.69)",
-  "(0.70 - 0.89)",
-  "(0.90 - 0.99)",
-  "(1.00 - 1.49)",
-  "(1.50 - 1.99)",
-  "(2.00 - 2.99)",
-  "(3.00 - 3.99)",
-  "(4.00 - 4.99)",
-  "(5.00 - 5.99)",
-  "(10.00 - 10.99)",
-  "(11.00 - 14.99)"
-];
+List<dynamic> _cut = ["EX", "VG","GD","F"];
 
-List<dynamic> _pol = ["EX", "VG", "GD", "F"];
+List<dynamic> _pol = ["EX", "VG","GD","F"];
 
-List<dynamic> _sym = ["EX", "VG", "GD", "F"];
+List<dynamic> _sym = ["EX", "VG","GD","F"];
 
 class FilterChipDisplay extends StatefulWidget {
-  // late final filterv filterveg;
 
-  var filterchipemail;
-  FilterChipDisplay({Key? key,this.filterchipemail}) : super(key: key);
+   var filterchipemail ;
+  FilterChipDisplay({Key ? mykye,  this.filterchipemail}) : super(key: mykye);
+  // late final filterv filterveg;
   @override
   _FilterChipDisplayState createState() => _FilterChipDisplayState();
 }
 
 class _FilterChipDisplayState extends State<FilterChipDisplay> {
-  var controller = Get.put(selectcontroll());
-  var colorname = Get.put(selectcolor());
-  var claritynm = Get.put(selectclarity());
-  var certnm = Get.put(selectcertificate());
-  var size = Get.put(SelectSize());
-  var polish = Get.put(selectpolish());
-  var symmetry = Get.put(selectsymmetry());
 
-//   List ondataa = [];
+
+  
+  TextEditingController fromController = TextEditingController();
+  TextEditingController tocontroller = TextEditingController();
+  var controller = Get.put(selectcontroll()); 
+  var colorname =Get.put(selectcolor());  
+  var claritynm = Get.put(selectclarity()); 
+  var certnm =Get.put(selectcertificate()); 
+  
+
+
+  List ondataa = [];
+
+    var datatab;
+
 // late String chooseval;
   @override
   void initState() {
+    
     super.initState();
     // fdata();
+    // print(main());
+    print(widget.filterchipemail);
+   
   }
 
   @override
   Widget build(BuildContext context) {
+   
     return new Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //     icon: Icon(
-        //       Icons.menu,
-        //       color: Colors.white,
-        //     ),
-        //     onPressed: () {}),
+        leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: Colors.white,
+            ),
+            onPressed: () {}),
         title: Text(
-          "Search Categories",
+          "Filter Result",
           style: TextStyle(
             color: Colors.white,
           ),
@@ -120,28 +80,41 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 Icons.check,
               ),
               onPressed: () async {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Newapi()));
+                // var fildata = await http
+                //     .get(Uri.parse("http://192.168.29.222/neweasy/test.json"));
+
+                // final fdata = jsonDecode(fildata.body) as List<dynamic>;
+
+                // controller.selectedlist.forEach((elemen) {
+                //   String filter = elemen;
+                //   ondataa = fdata
+                //       .where((element) => element.containsValue(filter))
+                //       .toList();
+                //   print(ondataa);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) =>api(sizefrom: fromController.text, sizeto: tocontroller.text, apigmail: widget.filterchipemail, )));
                 //   // );
                 // });
               }),
         ],
       ),
-      drawer: DrawerInfo(emaildata: widget.filterchipemail,),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
         child: Column(
           children: <Widget>[
+
+             // Text('${widget.Gmail}'),
+            // FutureBuilder(
+            //   future: FlutterSession().get('token'),
+            //   builder: (context,index){
+            //   return Text(index.hasData  ? index.data:datatab  );
+            // }),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   "Shapes",
-                  style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -158,8 +131,10 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 ),
               ),
             ),
+            
+      
             Divider(
-              color: Colors.purple,
+              color: Colors.blueGrey,
               height: 10.0,
             ),
             Align(
@@ -168,10 +143,7 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Colors',
-                  style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -181,27 +153,26 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   child: Wrap(
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: colname.map((a) => cname(a)).toList(),
+                  spacing: 5.0, 
+                  runSpacing: 5.0, 
+                  children: 
+                    colname.map((a) => cname(a)).toList(),
                   ),
                 ),
               ),
             ),
-            Divider(
-              color: Colors.purple,
+
+             Divider(
+              color: Colors.blueGrey,
               height: 10.0,
             ),
-            Align(
+             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Clarity',
-                  style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -211,27 +182,27 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   child: Wrap(
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: Clarity.map((c) => clarname(c)).toList(),
+                  spacing: 5.0, 
+                  runSpacing: 5.0, 
+                  children: 
+                    Clarity.map((c) => clarname(c)).toList(),
                   ),
                 ),
               ),
             ),
+            
             Divider(
-              color: Colors.purple,
+              color: Colors.blueGrey,
               height: 10.0,
             ),
-            Align(
+      
+             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Lab Certificate',
-                  style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                  'Certificate',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -241,53 +212,99 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   child: Wrap(
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: Labcert.map((l) => Lcert(l)).toList(),
+                  spacing: 5.0, 
+                  runSpacing: 5.0, 
+                  children: 
+                    Labcert.map((l) => Lcert(l)).toList(),
                   ),
                 ),
               ),
             ),
-            Divider(
-              color: Colors.purple,
+      
+             Divider(
+              color: Colors.blueGrey,
               height: 10.0,
             ),
+
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Size',
-                  style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
+                
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  child: Wrap(
-                    spacing: 5.0,
-                    runSpacing: 5.0,
-                    children: _size.map((sz) => cutname(sz)).toList(),
+            
+
+            Column(
+              mainAxisAlignment : MainAxisAlignment.center,
+              children: [
+                
+                 Row(
+                    children: [
+                      SizedBox(width: 8,),
+                      Expanded(
+                        child: from(),
+                      ),
+                      SizedBox(
+                        width: 8.0,
+                      ),
+                      Expanded(
+                          child: to()),
+                    ],
                   ),
-                ),
-              ),
-            ),
+              ],
+            )
+        
           ],
+          
         ),
-      ),
+      ), 
+    );
+  }
+ 
+  Widget from(){
+    return  Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField( 
+                      
+              controller: fromController,
+              keyboardType: TextInputType.number,
+              // validator: (v) =>num,
+              decoration: InputDecoration(
+              contentPadding: const EdgeInsets.all(5),   
+                labelText: "From",
+                border: OutlineInputBorder(),   
+                
+                )          
+              ),           
+            
     );
   }
 
+  Widget to() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+              
+              controller: tocontroller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                contentPadding:  const EdgeInsets.all(5),
+                labelText: "To",
+                border: OutlineInputBorder()
+              ),
+            ),
+    );
+  }
+
+
+
   Widget shape(String b) {
     return FilterChip(
-        checkmarkColor: Colors.white,
-        selectedColor: Colors.purple[400],
         //avatar: Text(""),
         label: Text(b),
         selected: controller.selectedlist.contains(b),
@@ -303,25 +320,21 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
 
   Widget cname(String a) {
     return FilterChip(
-        checkmarkColor: Colors.white,
-        selectedColor: Colors.purple[400],
         //avatar: Text(""),
         label: Text(a),
         selected: colorname.selectedcolors.contains(a),
         onSelected: (bool sele) {
           setState(() {
             if (sele)
-              colorname.selectedcolors.add(a);
+            colorname.selectedcolors.add(a);
             else
-              colorname.selectedcolors.remove(a);
+            colorname.selectedcolors.remove(a);
           });
         });
   }
 
   Widget clarname(String c) {
     return FilterChip(
-        checkmarkColor: Colors.white,
-        selectedColor: Colors.purple[400],
         //avatar: Text(""),
         label: Text(c),
         selected: claritynm.selectedclarity.contains(c),
@@ -335,13 +348,12 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
         });
   }
 
-  Widget Lcert(String l) {
+
+   Widget Lcert(String l) {
     return FilterChip(
-        checkmarkColor: Colors.white,
-        selectedColor: Colors.purple[400],
         //avatar: Text(""),
         label: Text(l),
-        selected: certnm.selectedcert.contains(l),
+        selected:certnm.selectedcert.contains(l),
         onSelected: (bool sele) {
           setState(() {
             if (sele)
@@ -352,20 +364,6 @@ class _FilterChipDisplayState extends State<FilterChipDisplay> {
         });
   }
 
-  Widget cutname(String sz) {
-    return FilterChip(
-        checkmarkColor: Colors.white,
-        selectedColor: Colors.purple[400],
-        //avatar: Text(""),
-        label: Text(sz),
-        selected: size.selectedsize.contains(sz),
-        onSelected: (bool sele) {
-          setState(() {
-            if (sele)
-              size.selectedsize.add(sz);
-            else
-              size.selectedsize.remove(sz);
-          });
-        });
+  
   }
-}
+

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_swiper/flutter_swiper.dart';
 
 class HomePage extends StatefulWidget {
-  var emailData;
+  var  emailData;
   var homepageaccountdetails;
   HomePage({Key? key, this.emailData,this.homepageaccountdetails}) : super(key: key);
 

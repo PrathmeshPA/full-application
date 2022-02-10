@@ -1,47 +1,59 @@
 import 'dart:convert';
-import 'dart:math';
-
-
-
 import 'package:dsapp/Screen/display_data.dart';
+import 'package:matcher/matcher.dart';
 
-import 'package:dsapp/Screen/listcontroll.dart';
+import 'package:get/get_navigation/src/root/parse_route.dart';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/get_widget_cache.dart';
 import 'package:http/http.dart' as http;
-//import 'package:get/get.dart';
+import 'listcontroll.dart';
 
-class SelectedDataProvider extends ChangeNotifier {}
 
-class Newapi extends StatefulWidget {
+class api extends StatefulWidget {
+  var apigmail;
+  var sizefrom ;
+  var sizeto;
+  // String sizefor= sfrom.toString();
+  api({Key ? key , this.sizefrom, this.sizeto, this.apigmail}) : super(key: key);
   @override
   _apiState createState() => _apiState();
 }
 
 // ignore: camel_case_types
-class _apiState extends State<Newapi> {
-  var controller = Get.put(selectcontroll());
-  var colorname = Get.put(selectcolor());
-  var claritynm = Get.put(selectclarity());
-  var certnm = Get.put(selectcertificate());
-  var cut = Get.put(selectcut());
-  var sizenm = Get.put(SelectSize());
-  var polish = Get.put(selectpolish());
-  var symmetry = Get.put(selectsymmetry());
-
+  class _apiState extends State<api> {
+  var controller =Get.put(selectcontroll());
+  var colorname  =Get.put(selectcolor());
+  var claritynm  =Get.put(selectclarity());
+  var certnm     =Get.put(selectcertificate());
+ 
   List product = [];
-  List shape = [];
+  List shape =   [];
   List colornm = [];
   List clarity = [];
-  List certname = [];
+  List certname= [];
   List cutname = [];
   List polnmae = [];
   List symname = [];
-  List size = [];
-  List cname = [];
-  List temp = [];
+  List cname=[] ;
+ List sizef=[] ;
+  List sto=[];
+  var alldata ; 
 
-  var a;
+@override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    super.setState(fn);
+    print(widget.apigmail);
+  }
+//  var clqty ;
+  // List newe=[];
+  var newe ;
+  var oldd;
+  // List<dynamic> newe=[];
   Future getdata() async {
     var rec =
         await http.get(Uri.parse("http://diasoft.in/neweasy/ajax/getcert.php"));
@@ -49,201 +61,254 @@ class _apiState extends State<Newapi> {
       setState(() {
         product = jsonDecode(rec.body) as List;
       });
+    
+    
     controller.selectedlist.forEach((element) {
-      String newdata = element;
+     String newdata = element;
+      // d.addAll(product.where((element) => element.containsValue(newdata)));
       shape.addAll(product.where((u) => u.containsValue(newdata)));
+      // alldata=colornm;
     });
 
-    if (controller.selectedlist.isEmpty) {
-      shape = product;
-    }
-    colorname.selectedcolors.forEach((element) {
-      String codata = element;
-      colornm.addAll(shape.where((element) => element.containsValue(codata)));
-    });
+     
+        var abc = 'clqty';
+      sto.addAll(product.where((element) => element.containsValue(abc)));
+      // newe=double.parse(sto.toString());
+    
+      if(controller.selectedlist.isEmpty){
+        shape = product;
+      }
+      //product.sort((a ,b) =>a.compareTo(b));
+      colorname.selectedcolors.forEach((element) {
+        String codata = element;
+        colornm.addAll(shape.where((element) => element.containsValue(codata)));
+      });
 
-    if (colorname.selectedcolors.isEmpty) {
-      colornm = shape;
-    }
+        if(colorname.selectedcolors.isEmpty){
+        colornm = shape;
+      }
 
-    claritynm.selectedclarity.forEach((element) {
-      String clrdata = element;
-      clarity
-          .addAll(colornm.where((element) => element.containsValue(clrdata)));
-    });
+      claritynm.selectedclarity.forEach((element) {
+        String clrdata=element;
+        clarity.addAll(colornm.where((element) => element.containsValue(clrdata) ));
+      });
 
-    if (claritynm.selectedclarity.isEmpty) {
-      clarity = colornm;
-    }
+        if(claritynm.selectedclarity.isEmpty){
+        clarity = colornm;
+       }
+      
+      certnm.selectedcert.forEach((element){
+        String clrdata=element;
+        certname.addAll(clarity.where((element) => element.containsValue(clrdata)));
+      });
 
-    certnm.selectedcert.forEach((element) {
-      String clrdata = element;
-      certname
-          .addAll(clarity.where((element) => element.containsValue(clrdata)));
-    });
+      if(certnm.selectedcert.isEmpty){
+        certname = clarity;
+       }
+    ///////////////////////////////////////////////////////
+       if(widget.sizefrom.isEmpty){
+         widget.sizefrom =null;
+        //  return null;
+       }else{
+         newe=double.parse(widget.sizefrom);  
+        sizef.addAll(certname.where((element) => element['clqty'] >= newe));
+       }
 
-    if (certnm.selectedcert.isEmpty) {
-      certname = clarity;
-    }
+              if(newe==null){
+               sizef =certname;
+              }
 
-    cut.selectedcut.forEach((element) {
-      String clrdata = element;
-      cutname
-          .addAll(certname.where((element) => element.containsValue(clrdata)));
-    });
 
-    if (cut.selectedcut.isEmpty) {
-      cutname = certname;
-    }
 
-    polish.selectedpol.forEach((element) {
-      String clrdata = element;
-      polnmae
-          .addAll(cutname.where((element) => element.containsValue(clrdata)));
-    });
+        if(widget.sizeto.isEmpty){
+          widget.sizeto =null;
+          // return null;
+          
+          }else{
 
-    if (polish.selectedpol.isEmpty) {
-      polnmae = cutname;
-    }
+          oldd =double.parse(widget.sizeto);
+          sto.addAll(sizef.where((element)=>element['clqty'] <=oldd)); 
+          }
+              if(oldd==null){
+                  sto=certname;
+            }
+          // sto = certname;
+//////////////////////////////////////////////////////////////////////////////////
+       
+          // if(newe == null){
+          //      newe = 0;
+          // }else{
+        // newe=double.parse(widget.sizefrom.text);  
+        // sizef.addAll(certname.where((element) => element['clqty'] >= newe));
+        // if(widget.sizefrom.text.isEmpty){
+        //   sizef =certname;
+        // }
+      //  }
+  
+      // sizef.addAll(certname.where((element)=> element.containsValue(element > 1.5)));
+        // sizef.addAll(certname.where((element) => element['clqty'] >= newe));
 
-    symmetry.selectedsymm.forEach((element) {
-      String clrdata = element;
-      symname
-          .addAll(polnmae.where((element) => element.containsValue(clrdata)));
-    });
+      //  if(widget.sizefrom.text.isEmpty){
+      //     sto=certname;
+      //       }
 
-    if (symmetry.selectedsymm.isEmpty) {
-      symname = polnmae;
-    }
+          // if(widget.sizeto.text.isEmpty){
+          //   return  
+          // }
+      // oldd =double.parse(widget.sizeto.text);
+      // sto.addAll(sizef.where((element)=>element['clqty'] <=oldd));  
 
-    sizenm.selectedsize.forEach((element) {
-      String sizedata = element;
-      size.addAll(symname.where((element) => element.containsValue(sizedata)));
-    });
+      // if(widget.sizeto.text.isEmpty){
+      //   sto =sizef;
+      // }
+      // if(newe.isEmpty || oldd.isEmpty){
+      //     newe = 0;
+      //     oldd = 0;
+      // }
 
-    if (sizenm.selectedsize.isEmpty) {
-      size = symname;
-    }
 
-    cname = size;
+        
+        cname=sto;
+
+
+        // if(cname.isEmpty){
+        //    Fluttertoast.showToast(
+        // msg: "Wrong password",
+        // toastLength: Toast.LENGTH_SHORT,
+        // gravity: ToastGravity.CENTER,
+        // timeInSecForIosWeb: 4,
+        // );
+        // }
+        // print(cname);
+        // print(sizefrome);
+        //print(product);
+        print(cname);
+        // List ner= (cname["clqty"]);
   }
 
   @override
   void initState() {
     super.initState();
     getdata();
+    // print(product);
+    
+    // print(d);
+    // print(sto);
   }
-
-  List post = [];
-  List _addSelectedValueArr = [];
-  List _addSalePrice = [];
+ 
+  //ode = false;
+ List post = [];
 
   getCheckboxItems() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DisplayData(
-                  newdata: _addSelectedValueArr,
-                )));
+    cname.forEach((post) {
+      if (post['checked'] == true) {
+        // print(_addSelectedValueArr);
+        Navigator.push(context,
+                      MaterialPageRoute(builder: (context) =>DisplayData(newdata: _addSelectedValueArr , usergmail: widget.apigmail,)/*(finalgmail:  widget.apigmail, newdata: _addSelectedValueArr)*/
+                      /*(finalgmail: widget.apigmail, data: _addSelectedValueArr,)*/));
+        // var selected = post;
+      }
+    });
   }
-
+  
+  var _isSelectedCheckBoxArr = List<dynamic>.empty(growable: false).obs;
+  var _addSelectedValueArr =List<dynamic>.empty(growable: false).obs;
+  // var  post;
+  List newdt = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
-          // title: Text("ApiData"),
+          title: Text("ApiData"),
           actions: [
-            TextButton.icon(
-              onPressed: getCheckboxItems, 
-              icon: Icon(Icons.shopping_cart_rounded, color: Colors.white,), label: Text('Add To Cart', style: TextStyle(color: Colors.white),))
-            // IconButton(
-            //     onPressed: getCheckboxItems,
-                
-            //     tooltip: 'Add To Cart',
-            //     icon: Icon(Icons.shopping_cart_rounded))
+            IconButton(
+                onPressed: getCheckboxItems,
+                // onPressed: () {
+                //   Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (context) => SelectedData(
+                //                 newdata: post,
+                //               )
+                //               )
+                //               );
+                // },
+                icon: Icon(Icons.add_shopping_cart_rounded))
           ],
         ),
         body: ListView.builder(
-            itemCount: cname.length,
+            itemCount:  cname.length,
             itemBuilder: (context, index) {
               final post = cname[index];
-
+              // _addSelectedValueArr.addAll(cname);
+              // post.forEach((element) {
+              //   String sh =element;
+              //   newdt.addAll(_addSelectedValueArr);
+              // });
               return Card(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 10, top: 10),
-                  child: ListView(
-                    physics: BouncingScrollPhysics(),
-                    shrinkWrap: true,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 1.0),
-                        horizontalTitleGap: 1.0,
-                        leading: Checkbox(
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            value: post['checked'] ?? false,
-                            onChanged: (value) {
-                              setState(() {
-                                post['checked'] = value;
-                              });
-                              print("onChanged: (value):$value ");
-                              if (value == true) {
-                                _addSelectedValueArr.add(cname[index]);
-                                _addSalePrice.add(cname[index]['saleprice']);
+                      Column(
+                        children: [
+                          Checkbox(
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              value: post['checked'] ?? false,
+                              // value: _isSelectedCheckBoxArr[index],
+                              onChanged: (value) {
+                                setState(() {
+                                 
+                                  post['checked'] = value;
+                                });
 
-                                print(_addSalePrice);
+                                print("onChanged: (value):$value ");
 
-                                // print(_addSelectedValueArr);
-                              } else if (value == false) {
-                                _addSelectedValueArr.remove(cname[index]);
-                              }
-                            }),
-                        title: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                                if (value == true) {
+                                  setState(() {
+                                    _addSelectedValueArr.add(cname[index]);
+                                  });
+                                } else if (value == false) {
+                                  setState(() {
+                                    _addSelectedValueArr.remove(cname[index]);
+                                  });
+                                }
+                              })
+                        ],
+                      ),
+                      Expanded(
+                        child: Column(
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text(
-                                  cname[index]['name'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                
+                                Text(cname[index]['name'].toString()),
+
                                 SizedBox(width: 5),
-                                Text(
-                                  cname[index]['shapenm'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text(cname[index]['shapenm'].toString()),
+                                //Text(d[index]['shapenm'].toString()),
                                 SizedBox(width: 5),
-                                Text(
-                                  cname[index]['colornm'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text(cname[index]['colornm'].toString()),
+                                //Text(d[index]['colornm'].toString()),
                                 SizedBox(width: 5),
-                                Text(
-                                  cname[index]['clarnm'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text(cname[index]['clarnm'].toString()),
                                 SizedBox(width: 5),
                                 Text(
                                   cname[index]['clqty'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
                                 ),
                                 SizedBox(width: 5),
-                                Text(
-                                  cname[index]['cert'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text(cname[index]['cert'].toString()),
                                 SizedBox(width: 5),
-                                Text(
-                                  '-' + cname[index]['disc'].toString() + '%',
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text('-' +
+                                    cname[index]['disc'].toString() +
+                                    '%'),
                                 SizedBox(width: 5),
-                                Text(
-                                  '\$' + cname[index]['saleprice'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text('\$' +
+                                    cname[index]['saleprice'].toString()),
                               ],
                             ),
                             SizedBox(height: 12.0),
@@ -260,7 +325,6 @@ class _apiState extends State<Newapi> {
                                       'x' +
                                       ' ' +
                                       cname[index]['height'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
                                 ),
                                 Text(
                                   cname[index]['cut'].toString() +
@@ -272,22 +336,14 @@ class _apiState extends State<Newapi> {
                                       '-' +
                                       ' ' +
                                       cname[index]['sym'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
                                 ),
-                                Text(
-                                  'D:' + cname[index]['depth'].toString() + '%',
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
-                                Text(
-                                  'T:' +
-                                      cname[index]['tableper'].toString() +
-                                      '%',
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
-                                Text(
-                                  'FL:' + cname[index]['flour'].toString(),
-                                  style: TextStyle(fontSize: 12.0),
-                                ),
+                                Text('D:' +
+                                    cname[index]['depth'].toString() +
+                                    '%'),
+                                Text('T:' +
+                                    cname[index]['tableper'].toString() +
+                                    '%'),
+                                Text('FL:' + cname[index]['flour'].toString()),
                               ],
                             ),
                           ],

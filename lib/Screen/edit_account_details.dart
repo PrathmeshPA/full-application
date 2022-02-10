@@ -24,41 +24,33 @@ class _EditAccountDetailsPageState extends State<EditAccountDetailsPage> {
   final password = TextEditingController();
   final mobileno = TextEditingController();
 
+   File? image;
+   
   Future sign_up(BuildContext context) async {
     Map mapdata = {
-      "image": firstname.text,
-    
+      "image":image,
     };
 
-    var url = Uri.parse("http://localhost/image.php");
+    var url = Uri.parse("http://192.168.29.222/image.php");
     var resp = await http.post(url, body: mapdata);
     var resultdata = jsonDecode(resp.body);
-    // var resultdata =await json.decode(json.encode(resp.body));
-    if (resultdata == "success") {
+    // var resultdata = await json.decode(json.encode(resp.body));
+    if (resultdata == 200) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => loginpage()),
       );
-    } else {
-      Fluttertoast.showToast(
-          msg: "Email Registerd",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 2,
-          backgroundColor: Colors.black,
-          textColor: Colors.white);
     }
   }
 
   String first_name = "";
   String last_name = "";
- 
   String g_email = "";
   String p_Number = "";
 
   var _formkey = GlobalKey<FormState>();
 
-  File? image;
+ 
 
   Future showImageSource(BuildContext context) async {
     return showModalBottomSheet(
